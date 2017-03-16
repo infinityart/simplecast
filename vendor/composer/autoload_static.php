@@ -9,7 +9,7 @@ class ComposerStaticInitc98af697b5f0cb5bc6ccb171a87db0d2
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
-            'SimpleCast\\' => 11,
+            'Simplecast\\' => 11,
         ),
         'D' => 
         array (
@@ -18,7 +18,7 @@ class ComposerStaticInitc98af697b5f0cb5bc6ccb171a87db0d2
     );
 
     public static $prefixDirsPsr4 = array (
-        'SimpleCast\\' => 
+        'Simplecast\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',
         ),

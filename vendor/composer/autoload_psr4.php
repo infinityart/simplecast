@@ -6,6 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'SimpleCast\\' => array($baseDir . '/app'),
+    'Simplecast\\' => array($baseDir . '/app'),
     'DDatabase\\' => array($baseDir . '/app/dao/database'),
 );
