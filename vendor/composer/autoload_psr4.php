@@ -7,5 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'SimpleCast\\' => array($baseDir . '/app'),
-    'DDatabase\\' => array($baseDir . '/git-packages/donneh-database/src'),
+    'DDatabase\\' => array($baseDir . '/app/dao/database'),
 );

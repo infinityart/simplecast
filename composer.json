@@ -2,7 +2,7 @@
   "autoload": {
     "psr-4": {
       "SimpleCast\\": "app/",
-      "DDatabase\\": "git-packages/donneh-database/src"
+      "DDatabase\\": "app/dao/database/"
     }
   }
 }

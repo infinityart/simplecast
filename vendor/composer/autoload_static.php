@@ -24,7 +24,7 @@ class ComposerStaticInitc98af697b5f0cb5bc6ccb171a87db0d2
         ),
         'DDatabase\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/git-packages/donneh-database/src',
+            0 => __DIR__ . '/../..' . '/app/dao/database',
         ),
     );
 
