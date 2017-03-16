@@ -170,4 +170,16 @@ class RouteCollection
             }
         }
     }
+
+    /**
+     * Return the requested collection.
+     *
+     * @param string $type
+     * @return mixed
+     */
+    public function getCollection($type = '')
+    {
+        return $this->$type;
+    }
+
 }
