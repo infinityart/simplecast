@@ -59,6 +59,8 @@ class RouteCollection
     {
         $request = $this->namespace . $request;
 
+        $uri = $this->formatUri($uri);
+
         try{
             $this->checkRequest($request, 'get_routes');
         } catch (\Exception $e) {
@@ -66,6 +68,20 @@ class RouteCollection
         }
 
         $this->get_routes[$uri] = $request;
+    }
+
+    /**
+     * Format the given URI.
+     *
+     * @param $uri
+     * @return string
+     */
+    public function formatUri($uri)
+    {
+        if(substr($uri, 1) !== '/'){
+            $uri .= '/';
+        }
+        return $uri;
     }
 
     /**
@@ -95,6 +111,8 @@ class RouteCollection
     {
         $request = $this->namespace . $request;
 
+        $uri = $this->formatUri($uri);
+
         try{
             $this->checkRequest($request, 'post_routes');
         } catch (\Exception $e) {
@@ -114,6 +132,8 @@ class RouteCollection
     {
         $request = $this->namespace . $request;
 
+        $uri = $this->formatUri($uri);
+
         try{
             $this->checkRequest($request, 'delete_routes');
         } catch (\Exception $e) {
@@ -132,6 +152,8 @@ class RouteCollection
     public function addPut($uri = '/bar/1', $request = 'ClassBar@FooFunction')
     {
         $request = $this->namespace . $request;
+
+        $uri = $this->formatUri($uri);
 
         try{
             $this->checkRequest($request, 'put_routes');

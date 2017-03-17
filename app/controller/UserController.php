@@ -16,12 +16,12 @@ class UserController
 {
     public function index()
     {
-
+        echo 'Indexing users---';
     }
 
     public function show()
     {
-
+        echo 'show User';
     }
 
     public function update()
