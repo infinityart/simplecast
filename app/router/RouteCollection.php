@@ -78,7 +78,7 @@ class RouteCollection
      */
     public function formatUri($uri)
     {
-        if(substr($uri, 1) !== '/'){
+        if(substr($uri, -1) !== '/'){
             $uri .= '/';
         }
         return $uri;

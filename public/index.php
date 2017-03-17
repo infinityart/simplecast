@@ -17,6 +17,7 @@ $RouterCollection->addGet('/users/1', 'UserController@show');
 $RouterCollection->addPost('/users/', 'UserController@save');
 $RouterCollection->addDelete('/users/1', 'UserController@delete');
 $RouterCollection->addPut('/users/1', 'UserController@update');
+$RouterCollection->addGet('/', 'UserController@home');
 
 $Router = new Router($RouterCollection);
 

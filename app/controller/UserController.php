@@ -39,4 +39,9 @@ class UserController
 
     }
 
+    public function home()
+    {
+        echo 'dit is de homepage';
+    }
+
 }

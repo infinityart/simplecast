@@ -82,6 +82,7 @@ class Router
         if(substr($request_uri, -1) !== '/'){
             $request_uri .= '/';
         }
+
         $this->request_uri = $request_uri;
     }
 
@@ -92,6 +93,9 @@ class Router
      */
     private function checkExistence(){
         $routes = $this->RouterCollection->getCollection($this->method);
+
+        var_dump($routes);
+        var_dump($this->request_uri);
 
         if(!array_key_exists($this->request_uri, $routes)){
             return 404;
