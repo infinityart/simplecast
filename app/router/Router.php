@@ -73,6 +73,6 @@ class Router
 
     private function render($class_method)
     {
-        
+
     }
 }
