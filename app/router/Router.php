@@ -93,9 +93,6 @@ class Router
     private function checkExistence(){
         $routes = $this->RouterCollection->getCollection($this->method);
 
-        var_dump($routes);
-        var_dump($this->request_uri);
-
         if(!array_key_exists($this->request_uri, $routes)){
             return 404;
         }

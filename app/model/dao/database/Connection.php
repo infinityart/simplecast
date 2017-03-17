@@ -9,8 +9,7 @@
  * @version 0.1 31/03/2016 Initial class definition.
  */
 
-namespace DDatabase;
-
+namespace Simplecast\Model\Dao\Database;
 
 class Connection
 {
@@ -37,7 +36,7 @@ class Connection
      */
     public function resolveClass($driver)
     {
-        $name = '\\DDatabase\\'.$driver.'Connection';
+        $name = '\\Simplecast\Model\Dao\Database;\\'.$driver.'Connection';
         if(class_exists($name)) {
             return $name;
         }

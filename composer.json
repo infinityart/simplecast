@@ -1,8 +1,7 @@
 {
   "autoload": {
     "psr-4": {
-      "Simplecast\\": "app/",
-      "DDatabase\\": "app/dao/database/"
+      "Simplecast\\": "app/"
     }
   }
 }

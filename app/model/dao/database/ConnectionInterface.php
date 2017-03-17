@@ -1,5 +1,5 @@
 <?php
-namespace DDatabase;
+namespace Simplecast\Model\Dao\Database;
 
 interface ConnectionInterface {
 

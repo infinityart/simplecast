@@ -22,5 +22,6 @@ $Router = new Router($RouterCollection);
 
 //TODO set basepath(when request uri is empty, use this instead)
 //TODO set 404 callback
+//TODO register parameters for function callback
 
 $Router->matchRequest();
