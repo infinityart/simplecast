@@ -57,7 +57,7 @@ class Router
 
         $response = $this->checkExistence();
 
-        if(!is_int($response)){
+        if(http_response_code() == 200){
             $this->render($response);
         }
     }
@@ -94,11 +94,9 @@ class Router
     private function checkExistence(){
         $routes = $this->RouterCollection->getCollection($this->method);
 
-        var_dump($routes);
-        var_dump($this->request_uri);
-
         if(!array_key_exists($this->request_uri, $routes)){
-            return 404;
+            http_response_code(404);
+            return;
         }
 
         return $class_method = $routes[$this->request_uri];

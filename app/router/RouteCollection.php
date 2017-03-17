@@ -43,6 +43,13 @@ class RouteCollection
     private $put_routes = [];
 
     /**
+     * Collection of http responses.
+     *
+     * @var array
+     */
+    private $http_responses = [];
+
+    /**
      * namespace.
      *
      * @var string
@@ -203,5 +210,4 @@ class RouteCollection
     {
         return $this->$type;
     }
-
 }
