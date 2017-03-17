@@ -9,7 +9,7 @@
  * @version 0.1 31/03/2016 Initial class definition.
  */
 
-namespace DDatabase;
+namespace Simplecast\Model\Dao\Database;
 
 
 class Database
