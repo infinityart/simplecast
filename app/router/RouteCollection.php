@@ -43,6 +43,13 @@ class RouteCollection
     private $put_routes = [];
 
     /**
+     * Collection of http responses.
+     *
+     * @var array
+     */
+    private $http_responses = [];
+
+    /**
      * namespace.
      *
      * @var string
@@ -78,7 +85,7 @@ class RouteCollection
      */
     public function formatUri($uri)
     {
-        if(substr($uri, 1) !== '/'){
+        if(substr($uri, -1) !== '/'){
             $uri .= '/';
         }
         return $uri;
@@ -203,5 +210,4 @@ class RouteCollection
     {
         return $this->$type;
     }
-
 }

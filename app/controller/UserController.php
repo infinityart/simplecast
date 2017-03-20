@@ -39,4 +39,14 @@ class UserController
 
     }
 
+    public function home()
+    {
+        echo 'dit is de homepage';
+    }
+
+    public function badRequest()
+    {
+        echo '404: pagina niet gevonden';
+    }
+
 }
