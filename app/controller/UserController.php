@@ -12,7 +12,7 @@
 namespace Simplecast\Controller;
 
 
-class UserController
+class UserController extends Controller
 {
     public function index()
     {

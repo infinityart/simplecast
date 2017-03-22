@@ -12,7 +12,7 @@ $RoutesCollection = new RouteCollection();
 
 $RoutesCollection->setNamespace('Simplecast\Controller');
 
-$RoutesCollection->addGet('/users/', 'UserController@index');
+$RoutesCollection->addGet('/', 'UserController@index');
 $RoutesCollection->addGet('/users/1', 'UserController@show');
 $RoutesCollection->addPost('/users/', 'UserController@save');
 $RoutesCollection->addDelete('/users/1', 'UserController@delete');
