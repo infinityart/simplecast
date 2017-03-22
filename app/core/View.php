@@ -56,6 +56,6 @@ class View
      */
     public function render()
     {
-        return $this->plates->render($this->template, $this->data);
+        echo $this->plates->render($this->template, $this->data);
     }
 }

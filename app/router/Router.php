@@ -110,9 +110,9 @@ class Router
     private function render($class_method)
     {
         $class_method = explode('@',$class_method);
-        $class = $class_method[0];
+        $class = new $class_method[0];
         $method = $class_method[1];
 
-        call_user_func([$class, $method]);
+        echo $class->$method();
     }
 }
