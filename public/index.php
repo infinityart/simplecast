@@ -12,18 +12,9 @@ $RoutesCollection = new RouteCollection();
 
 $RoutesCollection->setNamespace('Simplecast\Controller');
 
+// Start route collection
 
-$RoutesCollection->addGet('/users/', 'UserController@index');
-$RoutesCollection->addGet('/users/{id}', 'UserController@showById');
-
-$RoutesCollection->addGet('/users/{fakeid}/{names}', 'UserController@showByIdAndName');
-$RoutesCollection->addGet('/users/user/{id}', 'UserController@showUserId');
-
-
-$RoutesCollection->addPost('/users/', 'UserController@save');
-$RoutesCollection->addDelete('/users/1', 'UserController@delete');
-$RoutesCollection->addPut('/users/1', 'UserController@update');
-$RoutesCollection->addGet('/', 'UserController@home');
+// End route collection
 
 $Router = new Router($RoutesCollection);
 
