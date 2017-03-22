@@ -12,15 +12,19 @@ $RoutesCollection = new RouteCollection();
 
 $RoutesCollection->setNamespace('Simplecast\Controller');
 
+
 $RoutesCollection->addGet('/users/', 'UserController@index');
-$RoutesCollection->addGet('/users/1', 'UserController@show');
+$RoutesCollection->addGet('/users/{id}', 'UserController@showById');
+
+$RoutesCollection->addGet('/users/{fakeid}/{names}', 'UserController@showByIdAndName');
+$RoutesCollection->addGet('/users/user/{id}', 'UserController@showUserId');
+
+
 $RoutesCollection->addPost('/users/', 'UserController@save');
 $RoutesCollection->addDelete('/users/1', 'UserController@delete');
 $RoutesCollection->addPut('/users/1', 'UserController@update');
 $RoutesCollection->addGet('/', 'UserController@home');
 
 $Router = new Router($RoutesCollection);
-
-//TODO register parameters for function callback
 
 $Router->matchRequest();

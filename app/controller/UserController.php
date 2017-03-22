@@ -49,4 +49,20 @@ class UserController
         echo '404: pagina niet gevonden';
     }
 
+    public function showByIdAndName($id, $name)
+    {
+        echo '<br>' . 'Id: ' . $id . '<br>';
+        echo 'Name: ' . $name;
+    }
+
+    public function showById($id)
+    {
+        echo '<br>' . 'Id: ' . $id . '<br>';
+    }
+
+    public function showUserId($id)
+    {
+        echo '<br>' . 'user-Id: ' . $id . '<br>';
+    }
+
 }

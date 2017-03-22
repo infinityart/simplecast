@@ -36,7 +36,7 @@ class Connection
      */
     public function resolveClass($driver)
     {
-        $name = '\\Simplecast\Model\Dao\Database;\\'.$driver.'Connection';
+        $name = '\\implecast\Model\Dao\Database;\\'.$driver.'Connection';
         if(class_exists($name)) {
             return $name;
         }
