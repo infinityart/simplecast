@@ -12,11 +12,13 @@
 namespace Simplecast\Controller;
 
 
-class UserController
+class UserController extends Controller
 {
+
+    private $foo = "test";
     public function index()
     {
-        echo 'Indexing users---';
+        echo $this->foo;
     }
 
     public function show()
@@ -37,11 +39,6 @@ class UserController
     public function save()
     {
 
-    }
-
-    public function home()
-    {
-        echo 'dit is de homepage';
     }
 
     public function badRequest()
