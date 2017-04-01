@@ -5,6 +5,8 @@
     }
   },
   "require": {
-    "league/plates": "^3.3"
+    "league/plates": "^3.3",
+    "filp/whoops": "^2.1",
+    "vlucas/phpdotenv": "^2.4"
   }
 }
