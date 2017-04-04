@@ -184,10 +184,12 @@ class Router
         $class = $class_method[0];
         $method = $class_method[1];
 
+        $object = new $class;
+
         if(key_exists(1, $response)){
-            echo call_user_func_array([$class, $method], $response[1]);
+            echo $object->$method($response[1]);
         }else{
-            echo call_user_func([$class, $method]);
+            echo $object->$method();
         }
     }
 }
