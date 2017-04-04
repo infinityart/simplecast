@@ -15,5 +15,3 @@ if (getenv('ENVIRONMENT') !== 'production') {
 $whoops->register();
 
 require "../app/routes.php";
-
-throw new Exception();
