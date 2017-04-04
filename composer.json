@@ -3,5 +3,10 @@
     "psr-4": {
       "Simplecast\\": "app/"
     }
+  },
+  "require": {
+    "league/plates": "^3.3",
+    "filp/whoops": "^2.1",
+    "vlucas/phpdotenv": "^2.4"
   }
 }
