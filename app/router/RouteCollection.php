@@ -61,11 +61,8 @@ class RouteCollection
 
         $uri = $this->formatUri($uri);
 
-        try{
-            $this->checkRequest($request, 'get_routes');
-        } catch (\Exception $e) {
-            echo 'Caught exception: ', $e->getMessage(), "\n";
-        }
+        $this->checkRequest($request, 'get_routes');
+
 
         $this->get_routes[$uri] = $request;
     }
@@ -113,11 +110,7 @@ class RouteCollection
 
         $uri = $this->formatUri($uri);
 
-        try{
-            $this->checkRequest($request, 'post_routes');
-        } catch (\Exception $e) {
-            echo 'Caught exception: ', $e->getMessage(), "\n";
-        }
+        $this->checkRequest($request, 'post_routes');
 
         $this->post_routes[$uri] = $request;
     }
@@ -134,11 +127,7 @@ class RouteCollection
 
         $uri = $this->formatUri($uri);
 
-        try{
-            $this->checkRequest($request, 'delete_routes');
-        } catch (\Exception $e) {
-            echo 'Caught exception: ', $e->getMessage(), "\n";
-        }
+        $this->checkRequest($request, 'delete_routes');
 
         $this->delete_routes[$uri] = $request;
     }
@@ -155,11 +144,7 @@ class RouteCollection
 
         $uri = $this->formatUri($uri);
 
-        try{
-            $this->checkRequest($request, 'put_routes');
-        } catch (\Exception $e) {
-            echo 'Caught exception: ', $e->getMessage(), "\n";
-        }
+        $this->checkRequest($request, 'put_routes');
 
         $this->put_routes[$uri] = $request;
     }
@@ -178,13 +163,13 @@ class RouteCollection
         $method = $class_function[1];
 
         if (count($class_function) != 2) {
-            throw new \Exception("Class function request does not exist.");
+            throw new \Exception("Class function: {$request} is invalid.");
         }
         if (!class_exists($class)) {
-            throw new \Exception("Class does not exist in given request.");
+            throw new \Exception("Class: {$class} does not exist in given request.");
         }
         if (!method_exists($class, $method)) {
-            throw new \Exception("Method does not exist in given class.");
+            throw new \Exception("Method: {$method} does not exist in {$class}.");
         }
         if(array_key_exists($class, $this->$request_method)){
             if(in_array($method, $this->$request_method)){
