@@ -63,7 +63,6 @@ class RouteCollection
 
         $this->checkRequest($request, 'get_routes');
 
-
         $this->get_routes[$uri] = $request;
     }
 
