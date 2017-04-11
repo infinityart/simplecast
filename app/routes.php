@@ -11,6 +11,7 @@ $RoutesCollection->setNamespace('Simplecast\Controller');
 
 //$RoutesCollection->addGet('/users/', 'PagesController@home');
 $RoutesCollection->addGet('/{users}/{id}', 'PagesController@home');
+$RoutesCollection->addGet('/users/{id}', 'PagesController@home');
 
 //$RoutesCollection->addGet('/user/{id}', 'PagesController@home');
 

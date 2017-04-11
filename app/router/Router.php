@@ -25,6 +25,11 @@ class Router
     private $request_uri = '';
 
     /**
+     * @var array
+     */
+    private $request_uri_parts = [];
+
+    /**
      * @var string
      */
     private $method = '';
@@ -38,6 +43,11 @@ class Router
      * @var array
      */
     private $routes_uri_parts = [];
+
+    /**
+     * @var array
+     */
+    private $matched_uri_parts = [];
 
     /**
      * @var null | Dispatcher
@@ -59,7 +69,7 @@ class Router
     }
 
     /**
-     * Check if the current request matches with one of the collection.
+     * Match the current request matches with one of the collection.
      * If the request exists, it will call the function within the given class.
      *
      */
@@ -67,12 +77,22 @@ class Router
     {
         $this->setMethod();
         $this->setRequestUri();
+        $this->setRequestUriParts();
+        $this->setRoutes();
 
         $this->checkMatch();
 
         if (http_response_code() == 200) {
             $this->dispatcher->dispatch();
         }
+    }
+
+    /**
+     * Explode the request uri into parts for later use.
+     */
+    public function setRequestUriParts()
+    {
+        $this->request_uri_parts = explode('/', $this->request_uri);
     }
 
     /**
@@ -116,19 +136,15 @@ class Router
      */
     private function checkMatch()
     {
-        $this->setRoutes();
+        if (!$this->checkExistence()) {
 
-        if(!$this->checkExistence()){
-            $request_uri_parts = explode('/', $this->request_uri);
+            $this->checkCount();
 
-            $this->checkCount($request_uri_parts);
+            $this->eliminateRoutes();
 
-            $matched_route = $this->eliminateRoutes($request_uri_parts);
-
-            $this->searchParams($matched_route, $request_uri_parts);
+            $this->searchParams();
         }
 
-        // als class_method leeg is/niet gevonden dan 404
         if (empty($this->dispatcher)) {
             http_response_code(404);
         }
@@ -138,27 +154,31 @@ class Router
      * Process to eliminate parts and
      * the last part is the correct one.
      *
-     * @param $request_uri_parts
      * @return array
      */
-    private function eliminateRoutes($request_uri_parts)
+    private function eliminateRoutes()
     {
         // Todo reformat process to a clean way.
         $possible_uri_parts_array = $this->routes_uri_parts;
 
-        foreach ($request_uri_parts as $idx => $request_uri_part){
-            foreach ($this->routes_uri_parts as $idx_uri_parts => $uri_parts){
-                if($request_uri_part !== $uri_parts[$idx]){
+        foreach ($this->request_uri_parts as $idx => $request_uri_part) {
+            foreach ($this->routes_uri_parts as $idx_uri_parts => $uri_parts) {
+
+                if ($request_uri_part !== $uri_parts[$idx]) {
+
                     $match = false;
-                    foreach ($possible_uri_parts_array as $idx_possible_uri_parts => $possible_uri_parts){
-                        if($request_uri_part === $possible_uri_parts[$idx]){
+
+                    foreach ($possible_uri_parts_array as $idx_possible_uri_parts => $possible_uri_parts) {
+
+                        if ($request_uri_part === $possible_uri_parts[$idx]) {
                             $match = true;
                             unset($possible_uri_parts_array[$idx_uri_parts]);
                         }
-                        if($match === false){
+
+                        if ($match === false) {
                             $pattern = '/^{.*}$/';
 
-                            if(!preg_match($pattern, $possible_uri_parts[$idx])){
+                            if (!preg_match($pattern, $possible_uri_parts[$idx])) {
                                 unset($possible_uri_parts_array[$idx_possible_uri_parts]);
                             }
                         }
@@ -166,37 +186,27 @@ class Router
                 }
             }
         }
-        return $possible_uri_parts_array;
+        $this->matched_uri_parts = $possible_uri_parts_array[key($possible_uri_parts_array)];
     }
 
     /**
-     * Search for the params within 
+     * Search for the params within
      * the requested uri parts.
-     * 
-     * @param $possible_uri_parts_array
-     * @param $request_uri_parts
      */
-    private function searchParams($possible_uri_parts_array, $request_uri_parts)
+    private function searchParams()
     {
-        // Todo reformat process to a clean way.
-        if(!empty($possible_uri_parts_array)){
+        $matched_uri = implode('/', $this->matched_uri_parts);
 
-            foreach ($possible_uri_parts_array as $possible_uri_parts){
+        $parameters = [];
 
-                $matched_uri = implode('/', $possible_uri_parts);
+        foreach ($this->matched_uri_parts as $idx => $routes_uri_part) {
+            $pattern = '/^{.*}$/';
 
-                $parameters = [];
-                foreach ($possible_uri_parts as $idx => $possible_uri_part){
-                    $pattern = '/^{.*}$/';
-
-                    if(preg_match($pattern, $possible_uri_part)){
-                        $parameters[] = $request_uri_parts[$idx];
-                    }
-                }
+            if (preg_match($pattern, $routes_uri_part)) {
+                $parameters[] = $this->request_uri_parts[$idx];
             }
-
-            $this->initDispatcher($this->routes[$matched_uri], $parameters);
         }
+        $this->initDispatcher($this->routes[$matched_uri], $parameters);
     }
 
     /**
@@ -211,7 +221,7 @@ class Router
 
         $this->dispatcher->init($matched_route);
 
-        if(!empty($parameters)){
+        if (!empty($parameters)) {
             $this->dispatcher->setParameters($parameters);
         }
     }
@@ -234,17 +244,16 @@ class Router
      * Check in the collection for routes which has the
      * same count in parts as the param and put it in the routes_uri_parts variable.
      *
-     * @param $request_uri_parts
      * @return array
      */
-    private function checkCount($request_uri_parts)
+    private function checkCount()
     {
-        foreach ($this->routes as $uri => $route){
-            $uri_parts =  explode('/', $uri);
+        foreach ($this->routes as $uri => $route) {
+            $uri_parts = explode('/', $uri);
 
-            if(count($request_uri_parts) !== count($uri_parts)){
+            if (count($this->request_uri_parts) !== count($uri_parts)) {
                 unset($this->routes[$uri]);
-            }else{
+            } else {
                 $this->routes_uri_parts[] = $uri_parts;
             }
         }
