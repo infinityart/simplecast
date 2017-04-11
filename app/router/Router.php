@@ -104,7 +104,7 @@ class Router
     /**
      * Set the Routes to search in from the collection.
      */
-    public function setRoutes()
+    private function setRoutes()
     {
         $this->routes = $this->RouterCollection->getCollection($this->method);
     }
@@ -141,7 +141,7 @@ class Router
      * @param $request_uri_parts
      * @return array
      */
-    public function eliminateRoutes($request_uri_parts)
+    private function eliminateRoutes($request_uri_parts)
     {
         // Todo reformat process to a clean way.
         $possible_uri_parts_array = $this->routes_uri_parts;
@@ -176,7 +176,7 @@ class Router
      * @param $possible_uri_parts_array
      * @param $request_uri_parts
      */
-    public function searchParams($possible_uri_parts_array, $request_uri_parts)
+    private function searchParams($possible_uri_parts_array, $request_uri_parts)
     {
         // Todo reformat process to a clean way.
         if(!empty($possible_uri_parts_array)){
@@ -205,7 +205,7 @@ class Router
      * @param $matched_route
      * @param array $parameters
      */
-    public function initDispatcher($matched_route, $parameters = [])
+    private function initDispatcher($matched_route, $parameters = [])
     {
         $this->dispatcher = new Dispatcher();
 
@@ -221,7 +221,7 @@ class Router
      *
      * @return bool
      */
-    public function checkExistence()
+    private function checkExistence()
     {
         if (array_key_exists($this->request_uri, $this->routes)) {
             $this->initDispatcher($this->routes[$this->request_uri]);
@@ -237,7 +237,7 @@ class Router
      * @param $request_uri_parts
      * @return array
      */
-    public function checkCount($request_uri_parts)
+    private function checkCount($request_uri_parts)
     {
         foreach ($this->routes as $uri => $route){
             $uri_parts =  explode('/', $uri);
