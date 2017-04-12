@@ -9,11 +9,9 @@ $RoutesCollection = new RouteCollection();
 
 $RoutesCollection->setNamespace('Simplecast\Controller');
 
-//$RoutesCollection->addGet('/users/', 'PagesController@home');
-$RoutesCollection->addGet('/{users}/{id}', 'PagesController@home');
-$RoutesCollection->addGet('/users/{id}', 'PagesController@home');
+// Start routes
 
-//$RoutesCollection->addGet('/user/{id}', 'PagesController@home');
+// End routes
 
 $Router = new Router($RoutesCollection);
 
