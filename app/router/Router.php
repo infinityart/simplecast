@@ -136,18 +136,25 @@ class Router
      */
     private function checkMatch()
     {
+        $match = true;
+
         if (!$this->checkExistence()) {
-
-            $this->checkCount();
-
-            $this->eliminateRoutes();
-
-            $this->searchParams();
+            $match = $this->startMatching();
         }
 
-        if (empty($this->dispatcher)) {
+        if (!$match) {
             http_response_code(404);
         }
+    }
+
+    /**
+     * The start of the match process.
+     *
+     * @return array
+     */
+    public function startMatching()
+    {
+        return $this->checkCount();
     }
 
     /**
@@ -186,7 +193,14 @@ class Router
                 }
             }
         }
+
+        if(empty($possible_uri_parts_array)){
+            return false;
+        }
+
         $this->matched_uri_parts = $possible_uri_parts_array[key($possible_uri_parts_array)];
+
+        return $this->searchParams();
     }
 
     /**
@@ -202,11 +216,33 @@ class Router
         foreach ($this->matched_uri_parts as $idx => $routes_uri_part) {
             $pattern = '/^{.*}$/';
 
-            if (preg_match($pattern, $routes_uri_part)) {
-                $parameters[] = $this->request_uri_parts[$idx];
+            if (preg_match($pattern, $routes_uri_part, $matches)) {
+                $routes_uri_part = $this->removeBrackets($routes_uri_part);
+
+                $parameters[$routes_uri_part] = $this->request_uri_parts[$idx];
             }
         }
+
+        if(empty($parameters)){
+            return false;
+        }
+
         $this->initDispatcher(new Dispatcher(), $this->routes[$matched_uri], $parameters);
+
+        return true;
+    }
+
+    /**
+     * Remove the delimiter used for parameters in the URI.
+     *
+     * @param $string
+     * @return string
+     */
+    private function removeBrackets($string)
+    {
+        $string = substr_replace( $string, '', 0, 1);
+        $string = substr_replace( $string, '', -1, 1);
+        return $string;
     }
 
     /**
@@ -258,5 +294,11 @@ class Router
                 $this->routes_uri_parts[] = $uri_parts;
             }
         }
+
+        if(empty($this->routes_uri_parts)){
+            return false;
+        }
+
+        return $this->eliminateRoutes();
     }
 }
