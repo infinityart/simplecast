@@ -52,10 +52,10 @@ class RouteCollection
     /**
      * Add get route to the collection.
      *
-     * @param string $uri
-     * @param string $action
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
      */
-    public function get($uri = '/bar/1/', $action = 'ClassBar@FooFunction')
+    public function get($uri, $action)
     {
         $this->addRoute($uri, $action, 'get_routes');;
     }
@@ -63,10 +63,10 @@ class RouteCollection
     /**
      * Add Post route to the collection
      *
-     * @param string $uri
-     * @param string $action
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
      */
-    public function post($uri = '/bar/', $action = 'ClassBar@FooFunction')
+    public function post($uri, $action)
     {
         $this->addRoute($uri, $action, 'post_routes');
     }
@@ -74,10 +74,10 @@ class RouteCollection
     /**
      * Add delete route to the collection.
      *
-     * @param string $uri
-     * @param string $action
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
      */
-    public function delete($uri = '/bar/1', $action = 'ClassBar@FooFunction')
+    public function delete($uri, $action)
     {
         $this->addRoute($uri, $action, 'delete_routes');
     }
@@ -85,10 +85,10 @@ class RouteCollection
     /**
      * Add put route to the collection.
      *
-     * @param string $uri
-     * @param string $action
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
      */
-    public function put($uri = '/bar/1', $action = 'ClassBar@FooFunction')
+    public function put($uri, $action)
     {
         $this->addRoute($uri, $action, 'put_routes');
     }
@@ -180,7 +180,7 @@ class RouteCollection
      * @param string $type
      * @return mixed
      */
-    public function getCollection($type = '')
+    public function getCollection($type)
     {
         return $this->$type;
     }
