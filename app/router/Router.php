@@ -206,18 +206,19 @@ class Router
                 $parameters[] = $this->request_uri_parts[$idx];
             }
         }
-        $this->initDispatcher($this->routes[$matched_uri], $parameters);
+        $this->initDispatcher(new Dispatcher(), $this->routes[$matched_uri], $parameters);
     }
 
     /**
      * Pre fill the dispatcher with data.
      *
+     * @param DispatcherInterface $Dispatcher
      * @param $matched_route
      * @param array $parameters
      */
-    private function initDispatcher($matched_route, $parameters = [])
+    private function initDispatcher(DispatcherInterface $Dispatcher, $matched_route, $parameters = [])
     {
-        $this->dispatcher = new Dispatcher();
+        $this->dispatcher = $Dispatcher;
 
         $this->dispatcher->init($matched_route);
 
@@ -234,7 +235,7 @@ class Router
     private function checkExistence()
     {
         if (array_key_exists($this->request_uri, $this->routes)) {
-            $this->initDispatcher($this->routes[$this->request_uri]);
+            $this->initDispatcher(new Dispatcher(), $this->routes[$this->request_uri]);
             return true;
         }
         return false;
