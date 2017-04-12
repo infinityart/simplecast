@@ -141,6 +141,10 @@ class RouteCollection
         if(substr($uri, -1) !== '/'){
             $uri .= '/';
         }
+
+        if(substr($uri, 0, 1) !== '/'){
+            $uri = '/' . $uri;
+        }
         return $uri;
     }
 
