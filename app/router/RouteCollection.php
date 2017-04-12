@@ -63,7 +63,6 @@ class RouteCollection
 
         $this->checkRequest($request, 'get_routes');
 
-
         $this->get_routes[$uri] = $request;
     }
 
@@ -73,7 +72,7 @@ class RouteCollection
      * @param $uri
      * @return string
      */
-    public function formatUri($uri)
+    private function formatUri($uri)
     {
         if(substr($uri, -1) !== '/'){
             $uri .= '/';

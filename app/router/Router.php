@@ -25,28 +25,51 @@ class Router
     private $request_uri = '';
 
     /**
+     * @var array
+     */
+    private $request_uri_parts = [];
+
+    /**
      * @var string
      */
     private $method = '';
 
     /**
+     * @var array
+     */
+    private $routes = [];
+
+    /**
+     * @var array
+     */
+    private $routes_uri_parts = [];
+
+    /**
+     * @var array
+     */
+    private $matched_uri_parts = [];
+
+    /**
+     * @var null | Dispatcher
+     */
+    private $dispatcher = null;
+
+    /**
      * Router constructor.
+     *
      * @param $RouterCollection
+     * @throws \Exception
      */
     public function __construct($RouterCollection)
     {
-        try {
-            if (!is_object($RouterCollection)) {
-                throw new \Exception("Argument isn't valid.");
-            }
-        } catch (\Exception $e) {
-            echo 'Caught exception: ', $e->getMessage(), "\n";
+        if (!is_object($RouterCollection)) {
+            throw new \Exception("Argument isn't valid.");
         }
         $this->RouterCollection = $RouterCollection;
     }
 
     /**
-     * Check if the current request matches with one of the collection.
+     * Match the current request matches with one of the collection.
      * If the request exists, it will call the function within the given class.
      *
      */
@@ -54,12 +77,22 @@ class Router
     {
         $this->setMethod();
         $this->setRequestUri();
+        $this->setRequestUriParts();
+        $this->setRoutes();
 
-        $response = $this->checkExistence();
+        $this->checkMatch();
 
         if (http_response_code() == 200) {
-            $this->render($response);
+            $this->dispatcher->dispatch();
         }
+    }
+
+    /**
+     * Explode the request uri into parts for later use.
+     */
+    public function setRequestUriParts()
+    {
+        $this->request_uri_parts = explode('/', $this->request_uri);
     }
 
     /**
@@ -89,107 +122,140 @@ class Router
     }
 
     /**
+     * Set the Routes to search in from the collection.
+     */
+    private function setRoutes()
+    {
+        $this->routes = $this->RouterCollection->getCollection($this->method);
+    }
+
+    /**
      * Check if the request exists in the collection.
      *
      * @return int
      */
-    private function checkExistence()
+    private function checkMatch()
     {
-        $routes = $this->RouterCollection->getCollection($this->method);
+        if (!$this->checkExistence()) {
 
-        $requested_class_method = [];
+            $this->checkCount();
 
-        if (array_key_exists($this->request_uri, $routes)) {
-            $requested_class_method[] = $routes[$this->request_uri];
-        } else {
-            $request_uri_parts = explode('/', $this->request_uri);
+            $this->eliminateRoutes();
 
-            $uri_parts_array = [];
-            foreach ($routes as $uri => $route){
-                $uri_parts =  explode('/', $uri);
-
-                if(count($request_uri_parts) !== count($uri_parts)){
-                    unset($routes[$uri]);
-                }else{
-                    $uri_parts_array[] = $uri_parts;
-                }
-            }
-
-            $possible_uri_parts_array = $uri_parts_array;
-
-            foreach ($request_uri_parts as $idx => $request_uri_part){
-
-                foreach ($uri_parts_array as $idx_uri_parts => $uri_parts){
-                    if($request_uri_part !== $uri_parts[$idx]){
-                        $match = false;
-                        foreach ($possible_uri_parts_array as $idx_possible_uri_parts => $possible_uri_parts){
-                            if($request_uri_part === $possible_uri_parts[$idx]){
-                                $match = true;
-                                unset($possible_uri_parts_array[$idx_uri_parts]);
-                            }
-                            if($match === false){
-                                $pattern = '/^{.*}$/';
-
-                                if(!preg_match($pattern, $possible_uri_parts[$idx])){
-                                    unset($possible_uri_parts_array[$idx_possible_uri_parts]);
-                                }
-                            }
-                        }
-
-                    }
-                }
-            }
-
-            if(!empty($possible_uri_parts_array)){
-                $requested_class_method_with_parameters = [];
-
-                foreach ($possible_uri_parts_array as $possible_uri_parts){
-
-
-                    $matched_uri = implode('/', $possible_uri_parts);
-
-                    $parameters = [];
-                    foreach ($possible_uri_parts as $idx => $possible_uri_part){
-                        $pattern = '/^{.*}$/';
-
-                        if(preg_match($pattern, $possible_uri_part)){
-                            $parameters[] = $request_uri_parts[$idx];
-                        }
-                    }
-                }
-
-                $requested_class_method_with_parameters[] = $routes[$matched_uri];
-                $requested_class_method_with_parameters[] = $parameters;
-
-                return $requested_class_method_with_parameters;
-            }
+            $this->searchParams();
         }
 
-        // als class_method leeg is/niet gevonden dan 404
-        if (empty($requested_class_method)) {
+        if (empty($this->dispatcher)) {
             http_response_code(404);
-            return;
         }
-        return $requested_class_method;
     }
 
     /**
-     * Render the given request.
+     * Process to eliminate parts and
+     * the last part is the correct one.
      *
-     * @param $response
+     * @return array
      */
-    private function render($response)
+    private function eliminateRoutes()
     {
-        $class_method = explode('@', $response[0]);
-        $class = $class_method[0];
-        $method = $class_method[1];
+        // Todo reformat process to a clean way.
+        $possible_uri_parts_array = $this->routes_uri_parts;
 
-        $object = new $class;
+        foreach ($this->request_uri_parts as $idx => $request_uri_part) {
+            foreach ($this->routes_uri_parts as $idx_uri_parts => $uri_parts) {
 
-        if(key_exists(1, $response)){
-            echo $object->$method($response[1]);
-        }else{
-            echo $object->$method();
+                if ($request_uri_part !== $uri_parts[$idx]) {
+
+                    $match = false;
+
+                    foreach ($possible_uri_parts_array as $idx_possible_uri_parts => $possible_uri_parts) {
+
+                        if ($request_uri_part === $possible_uri_parts[$idx]) {
+                            $match = true;
+                            unset($possible_uri_parts_array[$idx_uri_parts]);
+                        }
+
+                        if ($match === false) {
+                            $pattern = '/^{.*}$/';
+
+                            if (!preg_match($pattern, $possible_uri_parts[$idx])) {
+                                unset($possible_uri_parts_array[$idx_possible_uri_parts]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        $this->matched_uri_parts = $possible_uri_parts_array[key($possible_uri_parts_array)];
+    }
+
+    /**
+     * Search for the params within
+     * the requested uri parts.
+     */
+    private function searchParams()
+    {
+        $matched_uri = implode('/', $this->matched_uri_parts);
+
+        $parameters = [];
+
+        foreach ($this->matched_uri_parts as $idx => $routes_uri_part) {
+            $pattern = '/^{.*}$/';
+
+            if (preg_match($pattern, $routes_uri_part)) {
+                $parameters[] = $this->request_uri_parts[$idx];
+            }
+        }
+        $this->initDispatcher($this->routes[$matched_uri], $parameters);
+    }
+
+    /**
+     * Pre fill the dispatcher with data.
+     *
+     * @param $matched_route
+     * @param array $parameters
+     */
+    private function initDispatcher($matched_route, $parameters = [])
+    {
+        $this->dispatcher = new Dispatcher();
+
+        $this->dispatcher->init($matched_route);
+
+        if (!empty($parameters)) {
+            $this->dispatcher->setParameters($parameters);
+        }
+    }
+
+    /**
+     * Check if the requested uri is directly in the collection.
+     *
+     * @return bool
+     */
+    private function checkExistence()
+    {
+        if (array_key_exists($this->request_uri, $this->routes)) {
+            $this->initDispatcher($this->routes[$this->request_uri]);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check in the collection for routes which has the
+     * same count in parts as the param and put it in the routes_uri_parts variable.
+     *
+     * @return array
+     */
+    private function checkCount()
+    {
+        foreach ($this->routes as $uri => $route) {
+            $uri_parts = explode('/', $uri);
+
+            if (count($this->request_uri_parts) !== count($uri_parts)) {
+                unset($this->routes[$uri]);
+            } else {
+                $this->routes_uri_parts[] = $uri_parts;
+            }
         }
     }
 }
