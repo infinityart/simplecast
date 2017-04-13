@@ -17,7 +17,7 @@ class Router
     /**
      * @var RouteCollection | null
      */
-    private $RouterCollection = null;
+    private $RouteCollection = null;
 
     /**
      * @var string
@@ -56,22 +56,16 @@ class Router
 
     /**
      * Router constructor.
-     *
-     * @param $RouterCollection
-     * @throws \Exception
+     * @param RouteCollection $RouteCollection
      */
-    public function __construct($RouterCollection)
+    public function __construct(RouteCollection $RouteCollection)
     {
-        if (!is_object($RouterCollection)) {
-            throw new \Exception("Argument isn't valid.");
-        }
-        $this->RouterCollection = $RouterCollection;
+        $this->RouteCollection = $RouteCollection;
     }
 
     /**
      * Match the current request matches with one of the collection.
      * If the request exists, it will call the function within the given class.
-     *
      */
     public function matchRequest()
     {
@@ -90,7 +84,7 @@ class Router
     /**
      * Explode the request uri into parts for later use.
      */
-    public function setRequestUriParts()
+    private function setRequestUriParts()
     {
         $this->request_uri_parts = explode('/', $this->request_uri);
     }
@@ -126,7 +120,7 @@ class Router
      */
     private function setRoutes()
     {
-        $this->routes = $this->RouterCollection->getCollection($this->method);
+        $this->routes = $this->RouteCollection->getCollection($this->method);
     }
 
     /**
@@ -136,18 +130,25 @@ class Router
      */
     private function checkMatch()
     {
+        $match = true;
+
         if (!$this->checkExistence()) {
-
-            $this->checkCount();
-
-            $this->eliminateRoutes();
-
-            $this->searchParams();
+            $match = $this->startMatching();
         }
 
-        if (empty($this->dispatcher)) {
+        if (!$match) {
             http_response_code(404);
         }
+    }
+
+    /**
+     * The start of the match process.
+     *
+     * @return array
+     */
+    private function startMatching()
+    {
+        return $this->checkCount();
     }
 
     /**
@@ -186,7 +187,14 @@ class Router
                 }
             }
         }
+
+        if(empty($possible_uri_parts_array)){
+            return false;
+        }
+
         $this->matched_uri_parts = $possible_uri_parts_array[key($possible_uri_parts_array)];
+
+        return $this->searchParams();
     }
 
     /**
@@ -202,22 +210,45 @@ class Router
         foreach ($this->matched_uri_parts as $idx => $routes_uri_part) {
             $pattern = '/^{.*}$/';
 
-            if (preg_match($pattern, $routes_uri_part)) {
-                $parameters[] = $this->request_uri_parts[$idx];
+            if (preg_match($pattern, $routes_uri_part, $matches)) {
+                $routes_uri_part = $this->removeBrackets($routes_uri_part);
+
+                $parameters[$routes_uri_part] = $this->request_uri_parts[$idx];
             }
         }
-        $this->initDispatcher($this->routes[$matched_uri], $parameters);
+
+        if(empty($parameters)){
+            return false;
+        }
+
+        $this->initDispatcher(new Dispatcher(), $this->routes[$matched_uri], $parameters);
+
+        return true;
+    }
+
+    /**
+     * Remove the delimiter used for parameters in the URI.
+     *
+     * @param $string
+     * @return string
+     */
+    private function removeBrackets($string)
+    {
+        $string = substr_replace( $string, '', 0, 1);
+        $string = substr_replace( $string, '', -1, 1);
+        return $string;
     }
 
     /**
      * Pre fill the dispatcher with data.
      *
+     * @param DispatcherInterface $Dispatcher
      * @param $matched_route
      * @param array $parameters
      */
-    private function initDispatcher($matched_route, $parameters = [])
+    private function initDispatcher(DispatcherInterface $Dispatcher, $matched_route, $parameters = [])
     {
-        $this->dispatcher = new Dispatcher();
+        $this->dispatcher = $Dispatcher;
 
         $this->dispatcher->init($matched_route);
 
@@ -234,7 +265,7 @@ class Router
     private function checkExistence()
     {
         if (array_key_exists($this->request_uri, $this->routes)) {
-            $this->initDispatcher($this->routes[$this->request_uri]);
+            $this->initDispatcher(new Dispatcher(), $this->routes[$this->request_uri]);
             return true;
         }
         return false;
@@ -257,5 +288,65 @@ class Router
                 $this->routes_uri_parts[] = $uri_parts;
             }
         }
+
+        if(empty($this->routes_uri_parts)){
+            return false;
+        }
+
+        return $this->eliminateRoutes();
+    }
+
+    /**
+     * Sets the namespace in the RouteCollection
+     *
+     * @param $namespace
+     */
+    public function setNamespace($namespace)
+    {
+        $this->RouteCollection->setNamespace($namespace);
+    }
+
+    /**
+     * Add get route to the collection.
+     *
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
+     */
+    public function get($uri, $action)
+    {
+        $this->RouteCollection->get($uri, $action);
+    }
+
+    /**
+     * Add Post route to the collection
+     *
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
+     */
+    public function post($uri, $action)
+    {
+        $this->RouteCollection->post($uri, $action);
+    }
+
+    /**
+     * Add delete route to the collection.
+     *
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
+     */
+    public function delete($uri, $action)
+    {
+        $this->RouteCollection->delete($uri, $action);
+    }
+
+    /**
+     * Add put route to the collection.
+     *
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
+     */
+    public function put($uri, $action)
+    {
+        $this->RouteCollection->put($uri, $action);
     }
 }

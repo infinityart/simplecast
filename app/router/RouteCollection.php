@@ -52,22 +52,86 @@ class RouteCollection
     /**
      * Add get route to the collection.
      *
-     * @param string $uri
-     * @param string $request
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
      */
-    public function addGet($uri = '/bar/1/', $request = 'ClassBar@FooFunction')
+    public function get($uri, $action)
     {
-        $request = $this->namespace . $request;
-
-        $uri = $this->formatUri($uri);
-
-        $this->checkRequest($request, 'get_routes');
-
-        $this->get_routes[$uri] = $request;
+        $this->addRoute($uri, $action, 'get_routes');
     }
 
     /**
-     * Format the given URI.
+     * Add Post route to the collection
+     *
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
+     */
+    public function post($uri, $action)
+    {
+        $this->addRoute($uri, $action, 'post_routes');
+    }
+
+    /**
+     * Add delete route to the collection.
+     *
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
+     */
+    public function delete($uri, $action)
+    {
+        $this->addRoute($uri, $action, 'delete_routes');
+    }
+
+    /**
+     * Add put route to the collection.
+     *
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
+     */
+    public function put($uri, $action)
+    {
+        $this->addRoute($uri, $action, 'put_routes');
+    }
+
+    /**
+     * Add a route to the collection by the action method.
+     *
+     * @param $uri
+     * @param $action
+     * @param $action_method
+     */
+    private function addRoute($uri, $action, $action_method)
+    {
+        $action = $this->namespace . $action;
+
+        $uri = $this->formatUri($uri);
+
+        $this->checkAction($action, $action_method);
+
+        $this->$action_method[$uri] = $action;
+    }
+
+    /**
+     * Make sure that the namespace end with  a \
+     * and set it in the object.
+     *
+     * @param $namespace
+     */
+    public function setNamespace($namespace)
+    {
+        $namespace = (string)$namespace;
+
+        if(substr($namespace, -1) !== '\\'){
+            $namespace .= '\\';
+        }
+
+        $this->namespace = $namespace;
+    }
+
+    /**
+     * Format the given URI:
+     * Check if the URI end with / otherwise
+     * add it to the string and return it
      *
      * @param $uri
      * @return string
@@ -77,102 +141,39 @@ class RouteCollection
         if(substr($uri, -1) !== '/'){
             $uri .= '/';
         }
+
+        if(substr($uri, 0, 1) !== '/'){
+            $uri = '/' . $uri;
+        }
         return $uri;
     }
 
     /**
-     * Set the namespace
+     * Check if the given action exists
+     * in the collection.
      *
-     * @param $namespace
-     */
-    public function setNamespace($namespace)
-    {
-        $namespace = (string)$namespace;
-
-        // Make sure that the namespace end with  a \
-        if(substr($namespace, -1) !== '\\'){
-            $namespace .= '\\';
-        }
-
-        $this->namespace = $namespace;
-    }
-
-    /**
-     * Add Post route to the collection
-     *
-     * @param string $uri
-     * @param string $request
-     */
-    public function addPost($uri = '/bar/', $request = 'ClassBar@FooFunction')
-    {
-        $request = $this->namespace . $request;
-
-        $uri = $this->formatUri($uri);
-
-        $this->checkRequest($request, 'post_routes');
-
-        $this->post_routes[$uri] = $request;
-    }
-
-    /**
-     * Add delete route to the collection.
-     *
-     * @param string $uri
-     * @param string $request
-     */
-    public function addDelete($uri = '/bar/1', $request = 'ClassBar@FooFunction')
-    {
-        $request = $this->namespace . $request;
-
-        $uri = $this->formatUri($uri);
-
-        $this->checkRequest($request, 'delete_routes');
-
-        $this->delete_routes[$uri] = $request;
-    }
-
-    /**
-     * Add put route to the collection.
-     *
-     * @param string $uri
-     * @param string $request
-     */
-    public function addPut($uri = '/bar/1', $request = 'ClassBar@FooFunction')
-    {
-        $request = $this->namespace . $request;
-
-        $uri = $this->formatUri($uri);
-
-        $this->checkRequest($request, 'put_routes');
-
-        $this->put_routes[$uri] = $request;
-    }
-
-    /**
-     * Check if the given request exists.
-     *
-     * @param $request
-     * @param $request_method
+     * @param $action
+     * @param $action_method
      * @throws \Exception
      */
-    private function checkRequest($request, $request_method)
+    private function checkAction($action, $action_method)
     {
-        $class_function = explode('@', $request);
-        $class = $class_function[0];
-        $method = $class_function[1];
+        $class_method = explode('@', $action);
+        $class = $class_method[0];
+        $method = $class_method[1];
 
-        if (count($class_function) != 2) {
-            throw new \Exception("Class function: {$request} is invalid.");
+        if (count($class_method) != 2) {
+            throw new \Exception("Class method: {$action} is invalid.");
         }
         if (!class_exists($class)) {
-            throw new \Exception("Class: {$class} does not exist in given request.");
+            throw new \Exception("Class: {$class} does not exist in given action.");
         }
         if (!method_exists($class, $method)) {
             throw new \Exception("Method: {$method} does not exist in {$class}.");
         }
-        if(array_key_exists($class, $this->$request_method)){
-            if(in_array($method, $this->$request_method)){
-                throw new \Exception("Request already exists");
+        if(array_key_exists($class, $this->$action_method)){
+            if(in_array($method, $this->$action_method)){
+                throw new \Exception("Action already exists");
             }
         }
     }
@@ -183,7 +184,7 @@ class RouteCollection
      * @param string $type
      * @return mixed
      */
-    public function getCollection($type = '')
+    public function getCollection($type)
     {
         return $this->$type;
     }

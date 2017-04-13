@@ -13,8 +13,7 @@
 
 namespace Simplecast\Router;
 
-
-class Dispatcher
+class Dispatcher implements DispatcherInterface
 {
     /**
      * @var string
