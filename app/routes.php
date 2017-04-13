@@ -5,14 +5,12 @@ use  Simplecast\Router\Router;
 
 require_once '../vendor/autoload.php';
 
-$RoutesCollection = new RouteCollection();
+$Router = new Router(new RouteCollection());
 
-$RoutesCollection->setNamespace('Simplecast\Controller');
+$Router->setNamespace('Simplecast\Controller');
 
 // Start routes
 
 // End routes
-
-$Router = new Router($RoutesCollection);
 
 $Router->matchRequest();

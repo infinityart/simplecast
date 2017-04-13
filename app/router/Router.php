@@ -17,7 +17,7 @@ class Router
     /**
      * @var RouteCollection | null
      */
-    private $RouterCollection = null;
+    private $RouteCollection = null;
 
     /**
      * @var string
@@ -56,22 +56,16 @@ class Router
 
     /**
      * Router constructor.
-     *
-     * @param $RouterCollection
-     * @throws \Exception
+     * @param RouteCollection $RouteCollection
      */
-    public function __construct($RouterCollection)
+    public function __construct(RouteCollection $RouteCollection)
     {
-        if (!is_object($RouterCollection)) {
-            throw new \Exception("Argument isn't valid.");
-        }
-        $this->RouterCollection = $RouterCollection;
+        $this->RouteCollection = $RouteCollection;
     }
 
     /**
      * Match the current request matches with one of the collection.
      * If the request exists, it will call the function within the given class.
-     *
      */
     public function matchRequest()
     {
@@ -90,7 +84,7 @@ class Router
     /**
      * Explode the request uri into parts for later use.
      */
-    public function setRequestUriParts()
+    private function setRequestUriParts()
     {
         $this->request_uri_parts = explode('/', $this->request_uri);
     }
@@ -126,7 +120,7 @@ class Router
      */
     private function setRoutes()
     {
-        $this->routes = $this->RouterCollection->getCollection($this->method);
+        $this->routes = $this->RouteCollection->getCollection($this->method);
     }
 
     /**
@@ -152,7 +146,7 @@ class Router
      *
      * @return array
      */
-    public function startMatching()
+    private function startMatching()
     {
         return $this->checkCount();
     }
@@ -300,5 +294,59 @@ class Router
         }
 
         return $this->eliminateRoutes();
+    }
+
+    /**
+     * Sets the namespace in the RouteCollection
+     *
+     * @param $namespace
+     */
+    public function setNamespace($namespace)
+    {
+        $this->RouteCollection->setNamespace($namespace);
+    }
+
+    /**
+     * Add get route to the collection.
+     *
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
+     */
+    public function get($uri, $action)
+    {
+        $this->RouteCollection->get($uri, $action);
+    }
+
+    /**
+     * Add Post route to the collection
+     *
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
+     */
+    public function post($uri, $action)
+    {
+        $this->RouteCollection->post($uri, $action);
+    }
+
+    /**
+     * Add delete route to the collection.
+     *
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
+     */
+    public function delete($uri, $action)
+    {
+        $this->RouteCollection->delete($uri, $action);
+    }
+
+    /**
+     * Add put route to the collection.
+     *
+     * @param string $uri example: /foo/bar/{id}
+     * @param string $action example: FooClass@barMethod
+     */
+    public function put($uri, $action)
+    {
+        $this->RouteCollection->put($uri, $action);
     }
 }

@@ -57,7 +57,7 @@ class RouteCollection
      */
     public function get($uri, $action)
     {
-        $this->addRoute($uri, $action, 'get_routes');;
+        $this->addRoute($uri, $action, 'get_routes');
     }
 
     /**
