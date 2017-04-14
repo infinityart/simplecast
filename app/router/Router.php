@@ -110,7 +110,7 @@ class Router
 
                 if(count($request_uri_parts) !== count($uri_parts)){
                     unset($routes[$uri]);
-                }else{
+                } else {
                     $uri_parts_array[] = $uri_parts;
                 }
             }
@@ -135,7 +135,6 @@ class Router
                                 }
                             }
                         }
-
                     }
                 }
             }
@@ -177,6 +176,7 @@ class Router
      * Render the given request.
      *
      * @param $response
+     * @return mixed
      */
     private function render($response)
     {
@@ -186,10 +186,10 @@ class Router
 
         $object = new $class;
 
-        if(key_exists(1, $response)){
-            echo $object->$method($response[1]);
-        }else{
-            echo $object->$method();
+        if(key_exists(1, $response)) {
+            $object->$method($response[1]);
+        } else {
+            $object->$method();
         }
     }
 }

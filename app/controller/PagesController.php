@@ -5,6 +5,6 @@ class PagesController extends Controller
     public function home()
     {
         $this->view->setTemplate('home');
-        return $this->view->render();
+        return $this->view ->render();
     }
 }

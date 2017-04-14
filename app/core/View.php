@@ -21,20 +21,16 @@ class View
      * Set the template to use.
      *
      * @param $template
+     * @throws \Exception
      */
     public function setTemplate($template)
     {
-        try {
-            $file = '../views/' . strtolower($template) . '.php';
+        $file = "../views/".strtolower($template).".php";
 
-            if(file_exists($file)) {
-                $this->template = $template;
-            } else {
-                throw new customException('Template ' . $template . ' not found!');
-            }
-        }
-        catch (customException $e) {
-            echo $e->errorMessage();
+        if(file_exists($file)) {
+            $this->template = $template;
+        } else {
+            throw new \Exception('Template ' . $template . ' not found!');
         }
     }
 
@@ -54,8 +50,11 @@ class View
      *
      * @return string
      */
-    public function render()
+    public function render($template = null)
     {
+        if($template) {
+            $this->setTemplate($template);
+        }
         echo $this->plates->render($this->template, $this->data);
     }
 }
